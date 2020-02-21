@@ -83,6 +83,7 @@ class MyApp(QWidget):
         lb_head.setFont(QFont('굴림',17, QFont.Bold))
         
         self.lb_center = QLabel()
+        self.lb_center.setMaximumSize(550,660) #라벨 최대사이즈
         self.lb_center.setAlignment(Qt.AlignCenter)
         self.lb_center.setStyleSheet("color : black;" #라벨 꾸미기
                               #"border-style: solid;"
@@ -91,6 +92,7 @@ class MyApp(QWidget):
                               #"border-radius: 2px;"
                               #"background-color: white;"
                             )
+        
         
         self.lb_bottom = QLabel()
         #lb_bottom.setAlignment(Qt.AlignBottom)
@@ -107,13 +109,20 @@ class MyApp(QWidget):
         #chatBox = QVBoxLayout() #수직 박스 레이아웃
         #chatBox.addWidget(lb_head)
         #chatBox.addStretch(1) #빈공간 설정
+        #lb_center 라벨에 스크롤 설정
+        scroll = QScrollArea()
+        scroll.setWidget(self.lb_center)
+        scroll.setFixedHeight(660)
+        scroll.setWidgetResizable(True)
         
         #레이아웃에 라벨 추가
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addWidget(lb_head)
-        self.mainLayout.addWidget(self.lb_center)
+        self.mainLayout.addWidget(scroll) #라벨 말고 qscrollarea를 입력해야함
         self.mainLayout.addWidget(self.lb_bottom)
+        self.mainLayout.setAlignment(Qt.AlignTop)
         
+        print('-=-=')
         self.setLayout(self.mainLayout) #main layout
         #self.layout_1.addWidget(self.lb_head, alignment=Qt.AlignTop)
         
@@ -219,13 +228,44 @@ class MyApp(QWidget):
     def findWay_click(self):
         print("findWay_click button click")
         
-    def enter_click(self):
+        
+    def enter_click(self):#출입 안내
         print("enter_click button click")
+        #이용시간 메뉴 텍스트 설정
+        txt1 = '도서관 출입문에 출입통제시스템이 설치되어\n'
+        txt2 = '학생증 또는 모바일 이용증이 있어야 출입 할 수 있으니\n도서관에 올 때는 학생증을 지참하여야 합니다.'
+        findWayText1 = QLabel(txt1 + txt2) # 텍스트 합쳐서 입력
+        findWayText1.setMaximumSize(450,100)
+        findWayText1.setFont(QFont('굴림',10))
+        findWayText1.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+        findWayText2 = QLabel('<출입방법>\n입구통제기의 스캐너에 학생증(모바일 이용증) 스캐닝 → 녹색램프 → 입장')
+        findWayText2.setMaximumSize(520,60)
+        findWayText2.setFont(QFont('굴림',9))
+        findWayText2.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+                            
+        centerLayout.addWidget(findWayText1) #레이아웃에 텍스트 입력
+        centerLayout.addWidget(findWayText2)
+        
+        centerLayout.setAlignment(Qt.AlignTop)
+        #centerlayout에 출입안내 버튼 집합 레이아웃 추가
+        self.startMessage() #최초 출력 함수 
         
     def studyHelp_click(self):
         print("studyHelp_click button click")
         
-    def infra_click(self):
+    def infra_click(self): #시설 안내
         print("infra_click button click")
 
 
@@ -298,6 +338,7 @@ class MyApp(QWidget):
         start_set = starter() #스타터 클래스 불러옴
         #중앙 라벨에 centerlayout을 레이아웃으로 설정
         self.lb_center.setLayout(start_set.start_def())
+        print('-=66-=')
         #메뉴 버튼에 클릭 이벤트 설정
         start_set.useTime_btn.clicked.connect(self.useTime_click)
         start_set.enter_btn.clicked.connect(self.enter_click)
@@ -378,6 +419,7 @@ if __name__ == '__main__':
     print("open app")
     #bookSearch('')
     centerLayout = QVBoxLayout()
+    
     app = QApplication(sys.argv)
     ex = MyApp()
     start = ex.startMessage()
