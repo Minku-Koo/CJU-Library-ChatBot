@@ -61,7 +61,7 @@ class MyApp(QWidget):
         self.widgetHeight = 0
         self.initUI()
 
-    def initUI(self):
+    def initUI(self): # main user interface 
         self.setWindowTitle('CJU Library ChatBot') #GUI 제목
         self.setWindowIcon(QIcon('mtd_logo.PNG')) #아이콘 설정, 16x16, PNG 파일
         #self.move(600, 300) #화면에서의 위치
@@ -146,20 +146,17 @@ class MyApp(QWidget):
         
         self.show() #화면에 표시
         
-    
     def center(self): #어플을 화면 중심에 위치시키는 함수
         qr = self.frameGeometry() #창의 위치 크기 정보 불러옴
         cp = QDesktopWidget().availableGeometry().center() #화면 가운데 위치 식별
         qr.moveCenter(cp) #화면 중심으로 이동
         self.move(qr.topLeft())
         
-    def btn1_click(self): #btn1 클릭이벤트
-        print("button click")
+    #--------------------------------------------------------------------
     
     #  #  #  #  #  #  #  #  #  #  #  #
     # 이용시간 클릭 이벤트 버튼 #
     #   #  #  #  #  #  #   #  #  #  #
-    
     
     def referenceRoom_click(self): 
         print("제1~3자료실")
@@ -258,8 +255,9 @@ class MyApp(QWidget):
     
     def findWay_click(self):
         print("findWay_click button click")
-        
-        
+
+    #--------------------------------------------------------------------
+    
     def enter_click(self):#출입 안내
         print("enter_click button click")
         #이용시간 메뉴 텍스트 설정
@@ -300,10 +298,189 @@ class MyApp(QWidget):
         centerLayout.setAlignment(Qt.AlignTop)
         #centerlayout에 출입안내 버튼 집합 레이아웃 추가
         self.startMessage() #최초 출력 함수 
-        
-    def studyHelp_click(self):
+    
+    #--------------------------------------------------------------------
+    
+    def studyHelp_click(self): #연구학습지원 버튼
         print("studyHelp_click button click")
+        #시설 안내 메뉴 텍스트 설정
+        txt = '원하시는 연구학습 내용을 선택하세요.'
+        studyHelpText = QLabel(txt)
+        studyHelpText.setMaximumSize(380,30)
+        studyHelpText.setFont(QFont('굴림',10))
+        studyHelpText.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+        #버튼 집합
+        studyHelpLayout = QHBoxLayout() # 버튼 집합 레이아웃 설정
         
+        self.loanChange = QPushButton("상호 대차", self) #버튼 객체 추가
+        self.loanChange.clicked.connect(self.loanChange_click)
+        
+        self.bookCopy = QPushButton("원문 복사", self) #버튼 객체 추가
+        self.bookCopy.clicked.connect(self.bookCopy_click)
+        
+        self.paperGo = QPushButton("학위 논문 제출", self) #버튼 객체 추가
+        self.paperGo.clicked.connect(self.paperGo_click)
+        
+        self.start_btn = QPushButton("처음으로", self) #버튼 객체 추가
+        self.start_btn.clicked.connect(self.start_btn_click)
+        
+        #레이아웃에 버튼 위치 배치
+        studyHelpLayout.addWidget(self.loanChange)
+        studyHelpLayout.addWidget(self.bookCopy)
+        studyHelpLayout.addWidget(self.paperGo)
+        studyHelpLayout.addWidget(self.start_btn)
+        
+        
+        
+        self.widgetHeight+=50
+        if self.widgetHeight >= 650: #스크롤바 늘려주기
+            self.centerHeight+=50
+            self.lb_center.setFixedHeight(self.centerHeight)
+        centerLayout.addWidget(studyHelpText)
+        centerLayout.setAlignment(Qt.AlignTop)
+        centerLayout.addLayout(studyHelpLayout)
+        
+    #  #  #  #  #  #  #  #  #  #  #  #  #
+    # 연구학습지원 클릭 이벤트 버튼 #
+    #   #  #  #  #  #  #   #  #  #  #  #
+    
+    def loanChange_click(self): #상호대차 버튼
+        print('loanChange_click click')
+        txt1 = "상호대차는 우리 도서관에 없는 도서를\n 타 도서관에서 대여 신청할 수 있는 서비스입니다."
+        txt2 = '\n원하시는 상호대차 방법을 선택하세요'
+        loanChangeText = QLabel(txt1+txt2)
+        loanChangeText.setMaximumSize(400,60)
+        loanChangeText.setFont(QFont('굴림',10))
+        loanChangeText.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+        
+        #버튼 집합
+        loanChangeLayout = QHBoxLayout() # 버튼 집합 레이아웃 설정
+        
+        self.keris_loan = QPushButton("KERIS 상호대차", self) #버튼 객체 추가
+        self.keris_loan.clicked.connect(self.keris_loan_click)
+        
+        self.cheongjuUniv_loan = QPushButton("청주권 대학도서관", self) #버튼 객체 추가
+        self.cheongjuUniv_loan.clicked.connect(self.cheongjuUniv_loan_click)
+        
+        self.booknarae_loan = QPushButton("책나래", self) #버튼 객체 추가
+        self.booknarae_loan.clicked.connect(self.booknarae_loan_click)
+        
+        self.start_btn = QPushButton("처음으로", self) #버튼 객체 추가
+        self.start_btn.clicked.connect(self.start_btn_click)
+        
+        centerLayout.addWidget(loanChangeText)
+        loanChangeLayout.addWidget(self.keris_loan)
+        loanChangeLayout.addWidget(self.cheongjuUniv_loan)
+        loanChangeLayout.addWidget(self.booknarae_loan)
+        loanChangeLayout.addWidget(self.start_btn)
+        
+        self.widgetHeight+=90
+        if self.widgetHeight >= 650: #스크롤바 늘려주기
+            self.centerHeight+=90
+            self.lb_center.setFixedHeight(self.centerHeight)
+        
+        centerLayout.setAlignment(Qt.AlignTop)
+        centerLayout.addLayout(loanChangeLayout)
+        
+    def keris_loan_click(self): # keris 상호대차
+        print('keris_loan btn click')
+        txt1 = "이용대상 : 학부생, 대학원생, 교직원, 지역주민 회원\n"
+        txt2 = '<신청방법>\n1. 도서관 홈페이지 로그인 - 도서관 서비스 - 상호대차에서 검색\n'
+        txt3 = "2. RISS 홈페이지 가입 - 소속도서관 청주대학교로 설정 - 기관 승인 확인"
+        txt4 = "대출 규정 : 3책 15일"
+        keris_loanText = QLabel(txt1+txt2+txt3+txt4)
+        keris_loanText.setMaximumSize(520,100)
+        keris_loanText.setFont(QFont('굴림',10))
+        keris_loanText.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+        centerLayout.setAlignment(Qt.AlignTop)
+        centerLayout.addWidget(keris_loanText)
+        self.loanChange_click()
+        
+        self.widgetHeight+=110
+        if self.widgetHeight >= 650: #스크롤바 늘려주기
+            self.centerHeight+=110
+            self.lb_center.setFixedHeight(self.centerHeight)
+        
+    def cheongjuUniv_loan_click(self): #청주권 대학도서관 상호대차
+        print('cheongjuUniv_loan_click btn click')
+        txt1 = "이용대상 : 학부생, 대학원생, 교직원(재학생만 해당)\n"
+        txt2 = '<신청방법>\n홈페이지 - 도서관 서비스 - 타도서관 이용의뢰서\n'
+        txt3 = " - 신청 - MyLibrary - 타도서관 이용의뢰서 - 출력"
+        txt4 = "대출 규정 : 2책 10일"
+        cheongjuUniv_loanText = QLabel(txt1+txt2+txt3+txt4)
+        cheongjuUniv_loanText.setMaximumSize(520,100)
+        cheongjuUniv_loanText.setFont(QFont('굴림',10))
+        cheongjuUniv_loanText.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+        centerLayout.setAlignment(Qt.AlignTop)
+        centerLayout.addWidget(cheongjuUniv_loanText)
+        self.loanChange_click()
+        
+        self.widgetHeight+=110
+        if self.widgetHeight >= 650: #스크롤바 늘려주기
+            self.centerHeight+=110
+            self.lb_center.setFixedHeight(self.centerHeight)
+        
+    def booknarae_loan_click(self): #책나래 상호대차
+        print('booknarae_loan_click btn click')
+        txt1 = "이용대상 : 등록장애인, 거동불편자, 국가유공자\n"
+        txt2 = '<이용대상>\n도서관 방문이 어려운 장애인 등을 위하여 이용자가 필요로 하는\n'
+        txt3 = "도서관 자료를 우체국 택배를 이용하여 무료로 집까지 제공해주는 서비스\n"
+        txt4 = "대출 규정 : 제공 도서관 규정에 따름\n"
+        txt5 = "<이용 절차>\n거주지역 도서관과 책나래 홈페이지 회원가입 후 나의 도서관 등록\n"
+        txt6 = "회원가입 승인 - 책나래에서 자료 검색 후 대출 신청 - 대출 처리 - 자료 배송"
+        cheongjuUniv_loanText = QLabel(txt1+txt2+txt3+txt4+txt5+txt6)
+        cheongjuUniv_loanText.setMaximumSize(520,220)
+        cheongjuUniv_loanText.setFont(QFont('굴림',10))
+        cheongjuUniv_loanText.setStyleSheet("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
+        centerLayout.setAlignment(Qt.AlignTop)
+        centerLayout.addWidget(cheongjuUniv_loanText)
+        self.loanChange_click()
+        
+        self.widgetHeight+=220
+        if self.widgetHeight >= 650: #스크롤바 늘려주기
+            self.centerHeight+=220
+            self.lb_center.setFixedHeight(self.centerHeight)
+        
+    
+    #--------------------------------------------------------------------
+    def bookCopy_click(self): #원문복사 버튼
+        print('bookCopy_click click')
+        
+    def paperGo_click(self): #학위논문제출 버튼
+        print('paperGo_click click')
+    
+    #--------------------------------------------------------------------
+    
     def infra_click(self): #시설 안내
         print("infra_click button click")
         #시설 안내 메뉴 텍스트 설정
@@ -396,7 +573,7 @@ class MyApp(QWidget):
     def copyPrint_infra_click(self): #복사 출력실
         print("copyPrint_infra_click button click")
         self.infra_click()
-
+    #--------------------------------------------------------------------
 
     #시작하자마자 뜨는 메시지
     def startMessage(self):
@@ -417,7 +594,8 @@ class MyApp(QWidget):
         start_set.infra_btn.clicked.connect(self.infra_click)
         start_set.findWay_btn.clicked.connect(self.findWay_click)
         start_set.studyHelp_btn.clicked.connect(self.studyHelp_click)
-        
+    
+    #--------------------------------------------------------------------
 
 class starter():
 
