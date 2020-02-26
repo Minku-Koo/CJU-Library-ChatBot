@@ -46,6 +46,8 @@ def bookCode(url, num):
     if num == 100:
         print("몇 번째 도서를 선택하시겠습니까?")
         num = int( input(" >>> ") )
+        #@@@@@@@@@@@@@@
+        #이거도 GUI에서 입력받기 
     
     getHTML = urlopen(url)
     bs = BeautifulSoup(getHTML, "html.parser")
@@ -110,17 +112,29 @@ def bookDetailSearch(code):
     bs = BeautifulSoup(getHTML, "html.parser")
     
     bookHead = bs.find("div", {"class": "profileHeader"}) #제목+저자
-    bookTitle = bookHead.find("h3").get_text() #제목
-    bookAuthor = bookHead.find("p").get_text() #저자
+    try:
+        bookTitle = bookHead.find("h3").get_text() #제목
+    except(AttributeError):
+        print('none type')
+    
+    try:
+        bookAuthor = bookHead.find("p").get_text() #저자
+    except(AttributeError):
+        print('none type')
+    
+        
     bookMakerList = bs.findAll("th", {"scope": "row"}) #도서정보 종합 리스트
     bookMaker = "정보 없음" #출판사 정보 없을 경우
     for book in bookMakerList:
         if book.get_text() == "발행사항": #출판사 정보 있을 경우
             bookMaker = book.next_sibling.get_text().split(",")[0].split(": ")[-1]
             break
-            
-    bookLocation = bs.find("td", {"class": "callNum"}).get_text() #도서관에서 도서 위치
-    bookRental = bs.find("span", {"class": "status available"}).get_text() #대출가능여부
+    try:
+        bookLocation = bs.find("td", {"class": "callNum"}).get_text() #도서관에서 도서 위치
+        bookRental = bs.find("span", {"class": "status available"}).get_text() #대출가능여부
+    except(AttributeError):
+        print('none type')
+        
     
     bookDetail = [bookTitle, bookAuthor, \
                 bookMaker, bookLocation, bookRental]
@@ -128,4 +142,68 @@ def bookDetailSearch(code):
     return bookDetail
     
     
+#자연어 분석한 결과 입력하면  함수 이름 텍스트로 반환
+def chatAnalysis( where):
+    print('analasis start')
+    if where[-1] == '_': #시설
+        return infra_func(where)
+    else: #연구학습지원
+        return studyHelp_func(where)
     
+
+def infra_func(name):
+    if name=='referenceRoom_':
+        print('referenceRoom_')
+        return 'referenceRoom_'
+    elif name=='readingRoom_':
+        print('readingRoom_')
+        return 'readingRoom_'
+    elif name=='studyRoom_':
+        print('studyRoom_')
+        return 'studyRoom_'
+    elif name=='copyPrint_':
+        print('copyPrint_')
+        return 'copyPrint_'
+    elif name=='notebookRoom_':
+        print('notebookRoom_')
+        return 'notebookRoom_'
+    elif name=='multimedia_':
+        print('multimedia_')
+        return 'multimedia_'
+    elif name=='infoRounge_':
+        print('infoRounge_')
+        return 'infoRounge_'
+    elif name=='monileApp_':
+        print('monileApp_')
+        return 'monileApp_'
+    else : #selfReturn_
+        print('selfReturn_')
+        return 'selfReturn_'
+
+def studyHelp_func(name):
+    if name=='paperGo':
+        print('paperGo')
+        return 'paperGo'
+    elif name=='loanChange':
+        print('loanChange')
+        return 'loanChange'
+    elif name=='bookCopy':
+        print('bookCopy')
+        return 'bookCopy'
+    elif name=='keris_loan':
+        print('keris_loan')
+        return 'keris_loan'
+    elif name=='cheongjuUniv_loan':
+        print('cheongjuUniv_loan')
+        return 'cheongjuUniv_loan'
+    elif name=='booknarae':
+        print('booknarae')
+        return 'booknarae'
+
+
+"""
+        # t시간/시설 +  연구학습지원 / 시설이름 일 경우
+        elif len(resultList[-1]) >1 : 
+            print('what plus studyhelp or infra name exist')
+            print_text = chatAnalysis(resultList[0],resultList[1])
+"""
