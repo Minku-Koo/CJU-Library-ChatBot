@@ -12,62 +12,159 @@ from PyQt5.QtGui import QIcon, QFont,QPalette
 from cjubot_library import *
 from PyQt5.QtCore import QDate, Qt ,QSize# QT 날짜 모듈
 
-
-#도서 검색 메인 / 최초 검색 시도 시 name == '' 
-def bookSearch(name):
-    if name=='': #최초 검색일 경우
-        print("검색 내용을 입력하세요.")
-        name = input(" >>> ")
-    
-    print("어떤 방법으로 검색하시겠습니까?")
-    print("1. 키워드 검색\n2. 완전일치 검색")
-    searchBy = input(" >>> ")
-    #잘못된 입력 경우 - 다시 시도
-    if searchBy != '1' and searchBy != '2':
-        bookSearch('')
-    #도서 검색 리스트 결과 받음
-    bookListResult = bookListSearch(searchBy, name, 0)
-    # 검색 도서가 10개 미만일 경우 -- 바로 도서 선택
-    if 10 >= bookListResult[0] and bookListResult[0] >0:
-        print("출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.")
-        code = bookCode(bookListResult[1], 100)
-        bookDetailSearch(code)
-    # 도서 검색 결과가 없는 경우 - 다시 진행
-    elif bookListResult[0]==0:
-        bookSearch('')
-        
-    else: #검색 결과 10개 이상일 경우
-        print("총 "+str(bookListResult[0])+"건의 도서가 검색되었습니다.")
-        print("출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.")
-        print("0번은 전체 출력\n다시 검색하실 수 있습니다.")
-        
-        num = input(" >>> ")
-        
-        if num.isdigit(): # 도서 선택 or 전체 출력
-            if num == '0': #전체 출력
-                bookListSearch(num, name, 100)
-            else: #도서 선택
-                code = bookCode(bookListResult[1], int(num))
-                bookDetailSearch(code)
-        else: #도서 재검색
-            bookSearch(num)
-            
-
 class MyApp(QWidget):
 
     def __init__(self):
         super().__init__()
         self.centerHeight = 650
         self.widgetHeight = 0
-        self.lb_style = ("color : black;" #라벨 꾸미기
-                              "border-style: solid;"
-                              "border-width: 1px;"
-                              "border-color: black;"
-                              "border-radius: 2px;"
-                              "background-color: #CEF6E3;"
-                            )
+        self.lb_style = lb_styles
         self.initUI()
-
+        
+    #도서 검색 메인 / 최초 검색 시도 시 name == '' 
+    def bookSearch(self, name):
+        #CMD에서만 활용할 경우
+        '''
+        #CMD에서만 활용할 경우
+        if name=='': #최초 검색일 경우
+            print("검색 내용을 입력하세요.")
+            name = input(" >>> ")
+        
+        print("어떤 방법으로 검색하시겠습니까?")
+        print("1. 키워드 검색\n2. 완전일치 검색")
+        searchBy = input(" >>> ")
+        #잘못된 입력 경우 - 다시 시도
+        if searchBy != '1' and searchBy != '2':
+            bookSearch('')
+        '''
+        #@@@@@@@@@@@@@@
+        #여기에 버튼 만들어서 키워드검색/전체검색 구분
+        bookstartText = QLabel('어떤 방법으로 검색하시겠습니까?') # 텍스트 합쳐서 입력
+        bookstartText.setFont(QFont('굴림',9))
+        bookstartText.setStyleSheet(self.lb_style)
+        
+        self.keyword_btn = QPushButton("키워드 검색", self) #버튼 객체 추가
+        self.keyword_btn.clicked.connect(self.keyword_btn_click)
+        
+        self.allsame_btn = QPushButton("완전일치 검색", self) #버튼 객체 추가
+        self.allsame_btn.clicked.connect(self.allsame_btn_click)
+        
+        self.start_btn = QPushButton("처음으로", self) #버튼 객체 추가
+        self.start_btn.clicked.connect(self.start_btn_click)
+        
+        bookstartLayout = QHBoxLayout()
+        bookstartLayout.addWidget(self.keyword_btn)
+        bookstartLayout.addWidget(self.allsame_btn)
+        bookstartLayout.addWidget(self.start_btn)
+        
+        centerLayout.addLayout(bookstartLayout)
+        
+    def book(self, n):
+        self.searchBy = n
+        #도서 검색 리스트 결과 받음
+        self.bookListResult = bookListSearch(n, self.bookName, 0)
+        # original : bookListResult = bookListSearch(searchBy, name, 0)
+        # 검색 도서가 10개 미만일 경우 -- 바로 도서 선택
+        if 10 >= self.bookListResult[0] and self.bookListResult[0] >0:
+            print("출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.")
+            bookText1 = QLabel('출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.') # 텍스트 합쳐서 입력
+            bookText1.setFont(QFont('굴림',9))
+            bookText1.setStyleSheet(self.lb_style)
+            centerLayout.addWidget(bookText1)
+            
+            
+            
+            
+            #code = bookCode(bookListResult[1], 100)
+            #bookDetailSearch(code)
+            #@@@@@@@@@@@@@@
+            #여기에 라벨 출력
+            '''
+            self.selectBook = self.inputTextBox.toPlainText()
+            self.selectBook.replace(' ','')
+            if self.selectBook.isdigit() :
+                code = bookCode(bookListResult[1], self.selectBook)
+                bookDetailSearch(code)
+            else:
+                print('숫자아님 ㅅㄱ')
+            '''
+        # 도서 검색 결과가 없는 경우 - 다시 진행
+        elif self.bookListResult[0]==0:
+            self.bookSearch('')
+            #@@@@@@@@@@@@@@
+            #이거말고 검색 결과 없다는 텍스트만 출력
+            bookText2 = QLabel('검색 결과가 없습니다.') # 텍스트 합쳐서 입력
+            bookText2.setFont(QFont('굴림',9))
+            bookText2.setStyleSheet(self.lb_style)
+            centerLayout.addWidget(bookText2)
+            
+        else: #검색 결과 10개 이상일 경우
+            print("총 "+str(self.bookListResult[0])+"건의 도서가 검색되었습니다.")
+            print("출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.")
+            print("0번은 전체 출력\n다시 검색하실 수 있습니다.")
+            
+            bookText3 = QLabel("총 "+str(self.bookListResult[0])+\
+                        "건의 도서가 검색되었습니다.") # 텍스트 합쳐서 입력
+            bookText3.setFont(QFont('굴림',9))
+            bookText3.setStyleSheet(self.lb_style)
+            
+            bookText4 = QLabel('출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.') # 텍스트 합쳐서 입력
+            bookText4.setFont(QFont('굴림',9))
+            bookText4.setStyleSheet(self.lb_style)
+            
+            bookText5 = QLabel('0번은 전체 출력\n다시 검색하실 수 있습니다.') # 텍스트 합쳐서 입력
+            bookText5.setFont(QFont('굴림',9))
+            bookText5.setStyleSheet(self.lb_style)
+            
+            centerLayout.addWidget(bookText3)
+            centerLayout.addWidget(bookText4)
+            centerLayout.addWidget(bookText5)
+            
+            
+            #num = input(" >>> ")
+            #num ='1'
+            #@@@@@@@@@@@@@@
+            #도서 번호 입력 or 전체출력 텍스트로 입력받기
+            '''
+            if num.isdigit(): # 도서 선택 or 전체 출력
+                if num == '0': #전체 출력
+                    bookListSearch(num, name, 100)
+                else: #도서 선택
+                    code = bookCode(self.bookListResult[1], int(num))
+                    bookDetailSearch(code)
+            '''
+    def keyword_btn_click(self):
+        print('keyword_btn_click')
+        self.book('1')
+        
+    def allsame_btn_click(self):
+        print('allsame_btn_click')
+        self.book('2')
+        
+    def bookNum_click(self): #10개 미만 도서 선택
+        self.selectBook = self.inputTextBox.toPlainText()
+        self.selectBook.replace(' ','').replace('\n','')
+        
+        if self.selectBook == '0':
+            print('this is zero')
+            bookListSearch(self.searchBy, self.bookName, 100)
+            
+        elif self.selectBook.isdigit() :
+            code = bookCode(self.bookListResult[1], int(self.selectBook))
+            bookDetail = bookDetailSearch(code)
+            
+            txt = "제목 : "+str(bookDetail[0]) +"\n저자 : "+str(bookDetail[1]) +\
+            "\n출판사 : "+str(bookDetail[2]) +\
+            "\n도서 위치 : "+str(bookDetail[3]) +\
+            "\n대출 여부 : "+str(bookDetail[4])
+            book1 = QLabel(txt) # 텍스트 합쳐서 입력
+            book1.setFont(QFont('굴림',9))
+            book1.setStyleSheet(self.lb_style)
+            centerLayout.addWidget(book1)
+        else:
+            print('숫자아님 ㅅㄱ')
+        return self.selectBook
+    
     def initUI(self): # main user interface 
         self.setWindowTitle('CJU Library ChatBot') #GUI 제목
         self.setWindowIcon(QIcon('mtd_logo.PNG')) #아이콘 설정, 16x16, PNG 파일
@@ -164,7 +261,7 @@ class MyApp(QWidget):
     def TextInput_click(self):
         print("hello text")
         print(self.inputTextBox.toPlainText())
-        self.userText = self.inputTextBox.toPlainText()
+        self.userText = self.inputTextBox.toPlainText().replace('\n','')
         lb_user_text = QLabel(self.inputTextBox.toPlainText()) #입력한 텍스트 
         
         lb_user_text.setFont(QFont('굴림',10))
@@ -178,26 +275,99 @@ class MyApp(QWidget):
     # 입력받은 텍스트 판별하고 출력해주는 아주 아주 중요한 것
     def mainText(self, text):
         print("text main")
-        useTime_text = ['이용시간', '시간', '몇시', '언제']
-        infra_text = {
-        '자료실': 'referenceRoom', '열람실': 'readingRoom', 
-        '스터디룸': 'studyRoom', '출력': 'copyPrint', '노트북열람실': 'notebookRoom', 
-        '복사': 'copyPrint','멀티미디어':'mulitmedia', '정보검색':'infoRounge',
-        '모바일':"monileApp", '대출반납기':'selfReturn', '반납기':"selfReturn", '자가대출':"selfReturn"
-        }
+        if text.isdigit() and len(text) <2: # 도서 선택 경우 
+            self.bookNum_click()
+            return 0
+            
+        #elif text.isdigit() and text == '0':
+            #전체출력
+            #return 0
         
-        text = text.replace(" ", "")
+        
+        self.bookName = text[1:]
+        if text[0] == '!': #도서검색
+            print('book search')
+            print(text[1:])
+            self.bookSearch(text[1:])
+            return 0
+            
+        
+        useTime_text = ['이용시간', '시간', '몇시', '언제', '열어']
+        useInfra_text = ["어떻",  "어떤"]
+        way_text = ["어디", '찾아가', '버스', '택시', '가는길', '얼마나', '어떻게']
+        study_text = {"논문":"paperGo", '상호대차':"loanChange", '원몬복사':"bookCopy",
+                '논문제출':"paperGo", '학위논문':"paperGo", 'keris':"keris_loan",
+                'KERIS':"keris_loan",'충북대':"cheongjuUniv_loan", '서원대':"cheongjuUniv_loan",
+                '청주교대':"cheongjuUniv_loan",
+                 '책나래':"booknarae", '도서복사':"bookCopy",'책복사':"bookCopy"}
+        infra_text = {
+        '자료실': 'referenceRoom_', '열람실': 'readingRoom_', 
+        '스터디룸': 'studyRoom_', '출력': 'copyPrint_', '노트북': 'notebookRoom_', 
+        '복사': 'copyPrint_','멀티미디어':'multimedia_', '정보검색':'infoRounge_',
+        '모바일':"monileApp_", '대출반납기':'selfReturn_', '반납':"selfReturn_", '자가대출':"selfReturn_",
+        '대출반납':"selfReturn_"}
+        
+        text = text.replace(" ", "").replace('\n','')
         result = ''
-        print(infra_text)
         for txt in useTime_text: #이용시간 묻는지 검사
             if txt in text:
-                result += '-T-'
+                result += 'T-'
+                break
                 
+        for txt in useInfra_text: #시설 묻는지 검사
+            if txt in text:
+                result += 'F-'
+                break
+                
+        for txt in way_text: #오는길 묻는지 검사
+            if txt in text:
+                result += 'W-'
+                break
+        
+        #출입 방법 검사 
+        if '출입' in text or '입장' in text or '들어가' in text:
+            result += 'E-'
+        
+        for txt in study_text: #연구학습지원 묻는지 검사
+            if txt in text:
+                result += study_text[txt]+'-'
+                break
+        
         for txt in infra_text.keys(): #시설 이름 있는지 검사
             if txt in text:
-                result += '-'+infra_text[txt]+'-'
-            
+                result += infra_text[txt]+'-'
+                break
         print(result)
+        #-------------------자연어 검사 끝
+        
+        resultList = result.split('-') # - 로 끊어서 리스트 입력
+        resultList.remove("") # 리스트 내 공백 제거
+        print(resultList)
+        
+        if len(resultList) == 0: #아무것도 알아듣지 못한 경우
+            print('cannot read')
+        
+        # 시설이름/연구학습지원 이름만 있을 경우
+        elif  len(resultList[-1]) >1 :  # 이름일 경우
+            print_text = chatAnalysis(resultList[-1])
+            print(print_text)
+            
+        elif len(resultList[0]) ==1: # 시간 또는 시설 alphabet만 있을 경우
+            if resultList[0]=='T': #시간 혼자
+                self.useTime_click()
+            elif 'W' in resultList: # E 가 리스트에 있을 경우 / 출입방법
+                self.enter_click()
+            elif 'W' in resultList: # W 가 리스트에 있을 경우 / 오시는길 바로 출력
+                self.findWay_click()
+            else : #시설 혼자
+                self.infra_click()
+            
+        else : #이건 무슨 경우인지 모르겟는경우 
+            print('what the fuck??')
+            
+        
+        
+            
             
         
     #--------------------------------------------------------------------
@@ -218,7 +388,7 @@ class MyApp(QWidget):
         print("노트북 열람실")
         self.useTime_click()
         
-    def mulitmedia_click(self): 
+    def multimedia_click(self): 
         print("멀티미디어 감상실")
         self.useTime_click()
         
@@ -267,8 +437,8 @@ class MyApp(QWidget):
         self.notebookRoom = QPushButton("노트북 열람실", self) #버튼 객체 추가
         self.notebookRoom.clicked.connect(self.notebookRoom_click)
         
-        self.mulitmedia = QPushButton("멀티미디어 감상실", self) #버튼 객체 추가
-        self.mulitmedia.clicked.connect(self.mulitmedia_click)
+        self.multimedia = QPushButton("멀티미디어 감상실", self) #버튼 객체 추가
+        self.multimedia.clicked.connect(self.multimedia_click)
         
         self.readingRoom = QPushButton("제 1~3 열람실", self) #버튼 객체 추가
         self.readingRoom.clicked.connect(self.readingRoom_click)
@@ -286,7 +456,7 @@ class MyApp(QWidget):
         useTimeLayout.addWidget(self.referenceRoom, 0, 0)
         useTimeLayout.addWidget(self.studyRoom, 0, 1)
         useTimeLayout.addWidget(self.notebookRoom, 0, 2)
-        useTimeLayout.addWidget(self.mulitmedia, 0, 3)
+        useTimeLayout.addWidget(self.multimedia, 0, 3)
         useTimeLayout.addWidget(self.readingRoom, 1, 0)
         useTimeLayout.addWidget(self.infoRounge, 1, 1)
         useTimeLayout.addWidget(self.copyPrint, 1, 2)
@@ -606,7 +776,7 @@ class MyApp(QWidget):
         infraMenuLayout = QGridLayout() # 버튼 집합 레이아웃 설정
         
         self.monileApp = QPushButton("모바일 이용증", self) #버튼 객체 추가
-        self.monileApp.clicked.connect(self.monileApp_click)
+        self.monileApp.clicked.connect(self.monileApp_infra_click)
         
         self.studyinfra = QPushButton("열람실", self) #버튼 객체 추가
         self.studyinfra.clicked.connect(self.readingRoom_infra_click)
@@ -621,7 +791,7 @@ class MyApp(QWidget):
         self.infoRounge_infra.clicked.connect(self.infoRounge_infra_click)
         
         self.selfReturn = QPushButton("자가대출반납기", self) #버튼 객체 추가
-        self.selfReturn.clicked.connect(self.selfReturn_click)
+        self.selfReturn.clicked.connect(self.selfReturn_infra_click)
         
         self.copyPrint_infra = QPushButton("복사/출력실", self) #버튼 객체 추가
         self.copyPrint_infra.clicked.connect(self.copyPrint_infra_click)
@@ -653,7 +823,7 @@ class MyApp(QWidget):
     # 시설 안내 클릭 이벤트 버튼 #
     #   #  #  #  #  #  #   #  #  #  #
     
-    def monileApp_click(self): #모바일 이용증
+    def monileApp_infra_click(self): #모바일 이용증
         print("monileApp_click button click")
         self.infra_click()
         
@@ -673,7 +843,7 @@ class MyApp(QWidget):
         print("infoRounge_infra_click button click")
         self.infra_click()
         
-    def selfReturn_click(self): #자가대출반납기
+    def selfReturn_infra_click(self): #자가대출반납기
         print("selfReturn_click button click")
         self.infra_click()
         
@@ -739,32 +909,26 @@ class starter():
         startText1 = QLabel('안녕하세요')
         #startText1.setMaximumSize(150,30)
         startText1.setFont(QFont('굴림',11))
-        startText1.setStyleSheet("color : black;" #라벨 꾸미기
-                              "border-style: solid;"
-                              "border-width: 1px;"
-                              "border-color: black;"
-                              "border-radius: 2px;"
-                              "background-color: #CEF6E3;"
-                            )
+        startText1.setStyleSheet(lb_styles) #라벨 꾸미기 
         
         startText2 = QLabel('원하시는 버튼을 클릭해주세요.\n채팅으로 검색하셔도 됩니다.')
         #startText2.setMaximumSize(260,50)
         startText2.setFont(QFont('굴림',11))
-        startText2.setStyleSheet("color : black;" #라벨 꾸미기
-                              "border-style: solid;"
-                              "border-width: 1px;"
-                              "border-color: black;"
-                              "border-radius: 2px;"
-                              "background-color: #CEF6E3;"
-                            )
+        startText2.setStyleSheet(lb_styles)
+        
+        startText3 = QLabel('도서검색을 하시려면 앞에 !를 붙여주세요.')
+        #startText2.setMaximumSize(260,50)
+        startText3.setFont(QFont('굴림',11))
+        startText3.setStyleSheet(lb_styles)
         #텍스트 라벨 2개를 리스트 형태로 반환
-        return [startText1, startText2]
+        return [startText1, startText2, startText3]
     
     #스타터 클래스 메인 함수 / 위 2개 함수를 활용하여 최초 출력 레이아웃 반환
     def start_def(self):
         #텍스트 라벨 추가
         centerLayout.addWidget(self.startText()[0])
         centerLayout.addWidget(self.startText()[1])
+        centerLayout.addWidget(self.startText()[2])
         
         #메뉴 버튼 집합 레이아웃 추가
         centerLayout.addLayout(self.startMsg())  #레이아웃 추가  !!!!!!
@@ -776,6 +940,13 @@ if __name__ == '__main__':
     print("open app")
     #bookSearch('')
     centerLayout = QVBoxLayout()
+    lb_styles = ("color : black;" #라벨 꾸미기
+                              "border-style: solid;"
+                              "border-width: 1px;"
+                              "border-color: black;"
+                              "border-radius: 2px;"
+                              "background-color: #CEF6E3;"
+                            )
     #centerHeight = 650
     app = QApplication(sys.argv)
     ex = MyApp()
