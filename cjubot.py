@@ -17,9 +17,16 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
         self.centerHeight = 650
-        self.widgetHeight = 0
+        self.widgetHeight = 50 #스타팅 메시지 기본 50
         self.lb_style = lb_styles
         self.initUI()
+        
+    #스크롤 조정
+    def scrollSetting(self, size):
+        self.widgetHeight+=size
+        if self.widgetHeight >= 650: #스크롤바 늘려주기
+            self.centerHeight+=size
+            self.lb_center.setFixedHeight(self.centerHeight)
         
     #도서 검색 메인 / 최초 검색 시도 시 name == '' 
     def bookSearch(self, name):
@@ -37,8 +44,6 @@ class MyApp(QWidget):
         if searchBy != '1' and searchBy != '2':
             bookSearch('')
         '''
-        #@@@@@@@@@@@@@@
-        #여기에 버튼 만들어서 키워드검색/전체검색 구분
         bookstartText = QLabel('어떤 방법으로 검색하시겠습니까?') # 텍스트 합쳐서 입력
         bookstartText.setFont(QFont('굴림',9))
         bookstartText.setStyleSheet(self.lb_style)
@@ -56,8 +61,10 @@ class MyApp(QWidget):
         bookstartLayout.addWidget(self.keyword_btn)
         bookstartLayout.addWidget(self.allsame_btn)
         bookstartLayout.addWidget(self.start_btn)
+        self.scrollSetting(50)
         
         centerLayout.addLayout(bookstartLayout)
+        
         
     def book(self, n):
         self.searchBy = n
@@ -66,19 +73,26 @@ class MyApp(QWidget):
         # original : bookListResult = bookListSearch(searchBy, name, 0)
         # 검색 도서가 10개 미만일 경우 -- 바로 도서 선택
         if 10 >= self.bookListResult[0] and self.bookListResult[0] >0:
+            bookList = self.bookListResult[2]
+            for booklist in bookList: #전체출력 
+                txt = booklist[0]+'\n'+booklist[1]+'\n'+booklist[2]
+                bookAll = QLabel(txt) # 텍스트 합쳐서 입력
+                bookAll.setFont(QFont('굴림',7))
+                bookAll.setStyleSheet(self.lb_style)
+                bookAll.setFixedHeight(50)
+                centerLayout.addWidget(bookAll)
+                self.scrollSetting(50)
+            
             print("출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.")
             bookText1 = QLabel('출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.') # 텍스트 합쳐서 입력
             bookText1.setFont(QFont('굴림',9))
             bookText1.setStyleSheet(self.lb_style)
             centerLayout.addWidget(bookText1)
-            
-            
+            self.scrollSetting(40)
             
             
             #code = bookCode(bookListResult[1], 100)
             #bookDetailSearch(code)
-            #@@@@@@@@@@@@@@
-            #여기에 라벨 출력
             '''
             self.selectBook = self.inputTextBox.toPlainText()
             self.selectBook.replace(' ','')
@@ -103,6 +117,17 @@ class MyApp(QWidget):
             print("출력한 도서 중 원하는 도서가 있으면 번호를 입력해주세요.")
             print("0번은 전체 출력\n다시 검색하실 수 있습니다.")
             
+            bookList = self.bookListResult[2]
+            for booklist in bookList: #상위 10개 출력
+                txt = booklist[0]+'\n'+booklist[1]+'\n'+booklist[2]
+                bookAll = QLabel(txt) # 텍스트 합쳐서 입력
+                bookAll.setFont(QFont('굴림',7))
+                bookAll.setStyleSheet(self.lb_style)
+                bookAll.setFixedHeight(50)
+                centerLayout.addWidget(bookAll)
+                
+                self.scrollSetting(50)
+            
             bookText3 = QLabel("총 "+str(self.bookListResult[0])+\
                         "건의 도서가 검색되었습니다.") # 텍스트 합쳐서 입력
             bookText3.setFont(QFont('굴림',9))
@@ -119,6 +144,10 @@ class MyApp(QWidget):
             centerLayout.addWidget(bookText3)
             centerLayout.addWidget(bookText4)
             centerLayout.addWidget(bookText5)
+            #bookAll.setFixedHeight(40)
+            self.scrollSetting(40)
+            
+            
             
             
             #num = input(" >>> ")
@@ -147,7 +176,16 @@ class MyApp(QWidget):
         
         if self.selectBook == '0':
             print('this is zero')
-            bookListSearch(self.searchBy, self.bookName, 100)
+            bookList = bookListSearch(self.searchBy, self.bookName, 100)[2]
+            for booklist in bookList: #전체출력 
+                txt = booklist[0]+'\n'+booklist[1]+'\n'+booklist[2]
+                bookAll = QLabel(txt) # 텍스트 합쳐서 입력
+                bookAll.setFont(QFont('굴림',7))
+                bookAll.setStyleSheet(self.lb_style)
+                centerLayout.addWidget(bookAll)
+                bookAll.setFixedHeight(40)
+                self.scrollSetting(40)
+                
             
         elif self.selectBook.isdigit() :
             code = bookCode(self.bookListResult[1], int(self.selectBook))
@@ -160,7 +198,9 @@ class MyApp(QWidget):
             book1 = QLabel(txt) # 텍스트 합쳐서 입력
             book1.setFont(QFont('굴림',9))
             book1.setStyleSheet(self.lb_style)
+            book1.setFixedHeight(60)
             centerLayout.addWidget(book1)
+            self.scrollSetting(60)
         else:
             print('숫자아님 ㅅㄱ')
         return self.selectBook
@@ -351,6 +391,15 @@ class MyApp(QWidget):
         elif  len(resultList[-1]) >1 :  # 이름일 경우
             print_text = chatAnalysis(resultList[-1])
             print(print_text)
+            #텍스트 출력
+            #for txt in print_text[0]:
+            AnalysisText = QLabel(print_text[0]) # 텍스트 합쳐서 입력
+            AnalysisText.setFont(QFont('굴림',8))
+            AnalysisText.setStyleSheet(self.lb_style)
+            AnalysisText.setFixedHeight(print_text[1])
+            centerLayout.addWidget(AnalysisText)
+            self.scrollSetting(print_text[1])
+            
             
         elif len(resultList[0]) ==1: # 시간 또는 시설 alphabet만 있을 경우
             if resultList[0]=='T': #시간 혼자
@@ -367,9 +416,6 @@ class MyApp(QWidget):
             
         
         
-            
-            
-        
     #--------------------------------------------------------------------
     
     #  #  #  #  #  #  #  #  #  #  #  #
@@ -378,30 +424,70 @@ class MyApp(QWidget):
     
     def referenceRoom_click(self): 
         print("제1~3자료실")
+        useTimeLabel = QLabel('09시~20시(학기중 평일), 18시(방학중 평일), 23시(시험기간중 평일)') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def studyRoom_click(self): 
         print("스터디룸")
+        useTimeLabel = QLabel('2층 1~8호 : 09시~00시\
+\n이외 : 09시~20시(학기중), 23시(시험기간), 18시(방학중)') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def notebookRoom_click(self): 
         print("노트북 열람실")
+        useTimeLabel = QLabel('1층 복사실 :09시~18시, 방학중 휴실\
+\n정보검색라운지 :연중 06시~24시') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def multimedia_click(self): 
         print("멀티미디어 감상실")
+        useTimeLabel = QLabel('09시~20시(학기) 18시(방학)') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def readingRoom_click(self): 
         print("제 1~3 열람실")
+        useTimeLabel = QLabel('제1~3열람실 : 연중무휴 24시간 순환개방\
+\n대학원열람실 : 06시~00시') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def infoRounge_click(self): 
         print("정보검색라운지")
+        useTimeLabel = QLabel('09시~00시') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def copyPrint_click(self): 
         print("복사/출력실")
+        useTimeLabel = QLabel('1층 복사실 : 09시~18시, 방학중 휴실\n\
+정보검색라운지 : 연중 06시~24시\n\
+3~4층 자료실: 09시~20시(학기중), 23시(시험기간), 18시(방학중)') # 텍스트 합쳐서 입력
+        useTimeLabel.setFont(QFont('굴림',9))
+        useTimeLabel.setStyleSheet(self.lb_style)
+        self.scrollSetting(30)
+        centerLayout.addWidget(useTimeLabel)
         self.useTime_click()
         
     def start_btn_click(self):
@@ -462,10 +548,7 @@ class MyApp(QWidget):
         useTimeLayout.addWidget(self.copyPrint, 1, 2)
         useTimeLayout.addWidget(self.start_btn, 1, 3)
         
-        self.widgetHeight+=90
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=90
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(100)
         
         useTimeLayout.setAlignment(Qt.AlignTop)
         #centerlayout에 이용시간 버튼 집합 레이아웃 추가
@@ -489,10 +572,7 @@ class MyApp(QWidget):
                             
         centerLayout.addWidget(findWayText1) #레이아웃에 텍스트 입력
         centerLayout.addWidget(findWayText2)
-        self.widgetHeight+=130
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=130
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(130)
         centerLayout.setAlignment(Qt.AlignTop)
         #centerlayout에 출입안내 버튼 집합 레이아웃 추가
         self.startMessage() #최초 출력 함수 
@@ -510,13 +590,7 @@ class MyApp(QWidget):
         #findWayText1.setFixedHeight(100)
         #findWayText1.setFixedSize(450, 100)
         enterText1.setFont(QFont('굴림',10))
-        enterText1.setStyleSheet("color : black;" #라벨 꾸미기
-                              "border-style: solid;"
-                              "border-width: 1px;"
-                              "border-color: black;"
-                              "border-radius: 2px;"
-                              "background-color: #CEF6E3;"
-                            )
+        enterText1.setStyleSheet(self.lb_style)
         enterText2 = QLabel('<출입방법>\n입구통제기의 스캐너에 학생증(모바일 이용증) 스캐닝 → 녹색램프 → 입장')
         enterText2.setMaximumSize(520,60)
         #findWayText2.setFixedHeight(60)
@@ -532,10 +606,7 @@ class MyApp(QWidget):
                             
         centerLayout.addWidget(enterText1) #레이아웃에 텍스트 입력
         centerLayout.addWidget(enterText2)
-        self.widgetHeight+=150
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=150
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(150)
         centerLayout.setAlignment(Qt.AlignTop)
         #centerlayout에 출입안내 버튼 집합 레이아웃 추가
         self.startMessage() #최초 출력 함수 
@@ -621,10 +692,7 @@ class MyApp(QWidget):
         loanChangeLayout.addWidget(self.booknarae_loan)
         loanChangeLayout.addWidget(self.start_btn)
         
-        self.widgetHeight+=90
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=90
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(100)
         
         centerLayout.setAlignment(Qt.AlignTop)
         centerLayout.addLayout(loanChangeLayout)
@@ -643,10 +711,7 @@ class MyApp(QWidget):
         centerLayout.addWidget(keris_loanText)
         self.loanChange_click()
         
-        self.widgetHeight+=110
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=110
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(110)
         
     def cheongjuUniv_loan_click(self): #청주권 대학도서관 상호대차
         print('cheongjuUniv_loan_click btn click')
@@ -662,10 +727,7 @@ class MyApp(QWidget):
         centerLayout.addWidget(cheongjuUniv_loanText)
         self.loanChange_click()
         
-        self.widgetHeight+=110
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=110
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(110)
         
     def booknarae_loan_click(self): #책나래 상호대차
         print('booknarae_loan_click btn click')
@@ -689,10 +751,7 @@ class MyApp(QWidget):
         centerLayout.addWidget(cheongjuUniv_loanText)
         self.loanChange_click()
         
-        self.widgetHeight+=220
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=220
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(230)
         
     
     #--------------------------------------------------------------------
@@ -720,10 +779,7 @@ class MyApp(QWidget):
         centerLayout.addWidget(bookCopy_loanText1)
         centerLayout.addWidget(bookCopy_loanText2)
         
-        self.widgetHeight+=220
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=220
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(240)
         
         self.studyHelp_click()
         
@@ -755,10 +811,7 @@ class MyApp(QWidget):
         centerLayout.addWidget(paperGo_loanText1)
         centerLayout.addWidget(paperGo_loanText2)
         
-        self.widgetHeight+=220
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=220
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(230)
         
         self.studyHelp_click()
     
@@ -811,10 +864,7 @@ class MyApp(QWidget):
         
         
         
-        self.widgetHeight+=90
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=90
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(90)
         centerLayout.addWidget(infraText)
         centerLayout.setAlignment(Qt.AlignTop)
         centerLayout.addLayout(infraMenuLayout)
@@ -860,10 +910,7 @@ class MyApp(QWidget):
         #중앙 라벨에 centerlayout을 레이아웃으로 설정
         self.lb_center.setLayout(start_set.start_def())
         
-        self.widgetHeight+=90
-        if self.widgetHeight >= 650: #스크롤바 늘려주기
-            self.centerHeight+=90
-            self.lb_center.setFixedHeight(self.centerHeight)
+        self.scrollSetting(70)
         
         #메뉴 버튼에 클릭 이벤트 설정
         start_set.useTime_btn.clicked.connect(self.useTime_click)
