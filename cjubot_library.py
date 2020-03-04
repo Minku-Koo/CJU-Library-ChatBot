@@ -256,7 +256,7 @@ Mobile : 청주대학교 중앙도서관 App → 로그인 → 그룹스터디�
         txt4 = """<발급 취소>\n청주대학교 클리커 홈페이지로 접속하여 로그인한 후,
 [App 등록관리] 메뉴에서 [중지신청] 버튼을 눌러 취소할 수 있습니다.
 앱을 통해 일일 1회 취소가능하며 2회 시, 관리자에게 문의하여 취소하시기 바랍니다."""
-        return [txt1+ txt2+ txt3+ txt4, 150]
+        return [txt1+ txt2+ txt3+ txt4, 180]
         
     else : #selfReturn_
         print('selfReturn_')
