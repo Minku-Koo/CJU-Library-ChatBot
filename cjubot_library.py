@@ -23,7 +23,10 @@ def bookListCount(url):
         print('none type')
         count = 0
     #총 검색 도서 개수 int로 반환
-    return int(count)
+    try:
+        return int(count)
+    except(ValueError):
+        return -1
 
 # 페이지 당 책  정보 출력
 def bookListInfo(url):
@@ -103,6 +106,7 @@ def bookListSearch(searchBy, name, print_all):
             print(info[p][0]+'\n'+info[p][2]) #제목 / 출판사
             print(info[p][1]+"\n") #저자
             gui_list.append(info[p])
+            
     #  총 검색 도서 개수 / URL를 리스트로 반환
     return [bookList, url_listFront +'1'+URL_end, gui_list]
     
