@@ -50,12 +50,6 @@ def bookListInfo(url):
     
 # 도서 상세정보 위한 책 코드 반환 / 최초 검색은 num == 100 아닌경우는 num == 검색도서번호
 def bookCode(url, num):
-   #if num == 100:
-        #print("몇 번째 도서를 선택하시겠습니까?")
-        #num = int( input(" >>> ") )
-        #@@@@@@@@@@@@@@
-        #이거도 GUI에서 입력받기 
-    
     getHTML = urlopen(url)
     bs = BeautifulSoup(getHTML, "html.parser")
     
@@ -125,7 +119,7 @@ def bookDetailSearch(code):
     bookHead = bs.find("div", {"class": "profileHeader"}) #제목+저자
     try:
         bookTitle = bookHead.find("h3").get_text() #제목
-    except(AttributeError):
+    except(AttributeError): #HTML 정보 없을 경우
         print('none type')
         bookTitle = '정보 없음'
     
@@ -156,7 +150,7 @@ def bookDetailSearch(code):
         bookRental = '정보 없음'
         
         
-    
+    # 최종 도서 상세 정보 리스트 출력
     bookDetail = [bookTitle, bookAuthor, \
                 bookMaker, bookLocation, bookRental]
     print(bookDetail)
@@ -296,4 +290,12 @@ def studyHelp_func(name):
     elif name=='booknarae':
         print('booknarae')
         return ['booknarae',20]
+        
+    elif name == "loanBook":
+        print('loan book')
+        return ['loanBook',20]
+        
+    elif name == 'lateReturn':
+        print('return late')
+        return ['lateReturn',20]
 
