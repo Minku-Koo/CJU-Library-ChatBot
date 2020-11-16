@@ -19,7 +19,7 @@ class MyApp(QWidget):
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.KeyRelease and obj is self.inputTextBox:
             if event.key() == QtCore.Qt.Key_Return and self.inputTextBox.hasFocus():
-                print('Enter pressed---')
+                print('Enter pressed')
                 self.TextInput_click() # enter누르면 실행
         return super().eventFilter(obj, event)
         
@@ -151,7 +151,6 @@ class MyApp(QWidget):
         self.selectBook.replace('\r','')
         
         if self.selectBook == '0':  #전체출력
-            print('this is zero')
             bookList = bookListSearch(self.searchBy, self.bookName, 100)[2]
             for booklist in bookList: #전체출력 
                 txt = booklist[0]+'\n'+booklist[1]+'\n'+booklist[2]
@@ -169,7 +168,6 @@ class MyApp(QWidget):
             self.labelPlus(txt, 8 , 100)
             
         else:
-            print('숫자아님 ㅅㄱ')
             print(self.selectBook)
         return self.selectBook
     
@@ -330,8 +328,6 @@ class MyApp(QWidget):
             
         self.bookName = text[1:]
         if text[0] == '!': #도서검색
-            print('book search')
-            print(text[1:])
             self.bookSearch(text[1:])
             return 0
             
@@ -370,7 +366,6 @@ class MyApp(QWidget):
         extra_text = {
             '찢어':'책은 찢으면 안돼요. 도서관 물건은 내 물건처럼',
             '맨유':'맨유우승가자',
-            '맹구':'맹구가 아니고 맨유입니다 ㅜㅜ',
             '훔치':'훔치면 깜빵가요. 조심하세요.',
             '몰래':'허튼짓 하다가 골로 갑니다',
             '담배':'담배는 밖에서 알아서 피세요',
@@ -435,7 +430,7 @@ class MyApp(QWidget):
         
         if len(resultList) == 0: #아무것도 알아듣지 못한 경우
             print('cannot read')
-            self.labelPlus("뭐라는거야", 8, 20)
+            self.labelPlus("뭐라는구요?", 8, 20)
             self.scrollSetting(15)
         
         # 시설이름/연구학습지원 이름만 있을 경우
